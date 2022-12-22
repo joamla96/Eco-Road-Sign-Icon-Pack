@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3432586049
+CRC: 996249441
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c0fb2c32580fbed69e35f6360c8a0f5a
+    Hash: d75a7652b2fc3ca0d3e5296c902d2b0c
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 46d55f6c99d53ef64de0312129297fdb
+    Hash: 9fc686b3e67e6e78f69201986b244a27
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -26,6 +26,8 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 65
+  Script: {instanceID: 0}
+- Class: 89
   Script: {instanceID: 0}
 - Class: 104
   Script: {instanceID: 0}
@@ -66,5 +68,4 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Scenes/EcoRoadSignIcons.unity
-- Assets/EcoModKit/TemplateScene.unity
 Dependencies: []
