@@ -1416,6 +1416,9 @@
         <member name="M:Eco.Shared.Math.Route.FindPathSegmentIndexAtTime(System.Single,System.Int32)">
             <summary>Finds <see cref="T:Eco.Shared.Math.PathSegment"/> index covering <paramref name="time"/> starting at path segment with index <paramref name="start"/>.</summary>
         </member>
+        <member name="M:Eco.Shared.Math.Route.PosListToWaypoints(Eco.Shared.Math.TraversalData,System.Numerics.Vector3,System.Collections.Generic.IEnumerable{System.Numerics.Vector3})">
+            <summary>Create a list of detailed path segments, each one with detailed properties about that segment that will help us move and rotate smoothly the animal on the client side.</summary>
+        </member>
         <member name="T:Eco.Shared.Networking.Auth.AdminAwareRPCAuthorizer">
             <summary><see cref="T:Eco.Shared.Networking.Auth.AdminAwareRPCAuthorizer"/> wraps another <see cref="T:Eco.Shared.Networking.Auth.IRPCAuthorizer"/> and adds special case for admin access. Auto-passes auth check if observer is admin.</summary>
         </member>
@@ -1636,19 +1639,6 @@
         <member name="M:Eco.Shared.Networking.NetworkClient.TryConnectDirectly(Eco.Shared.Networking.ExtendedServerInfo)">
             <summary>Tries to connect directly to <paramref name="server"/> using external and internal endpoints (if available).</summary>
         </member>
-        <member name="M:Eco.Shared.Networking.NetworkClient.BuildDelivery">
-            <summary>
-            Build delivery packets list in thread unsafe context to be delivered with thread-safe <see cref="M:Eco.Shared.Networking.NetworkClient.Deliver(System.Collections.Generic.List{Eco.Shared.Pools.PooledMemoryStream})"/>.
-            </summary>
-            <returns>list of packets to delivery.</returns>
-        </member>
-        <member name="M:Eco.Shared.Networking.NetworkClient.Deliver(System.Collections.Generic.List{Eco.Shared.Pools.PooledMemoryStream})">
-            <summary>
-            Thread-safe deliver method for list of packets.
-            WARNING! It consumes packets list! You can't use the list after pass it to Deliver method.
-            </summary>
-            <param name="packets">list of packets to deliver.</param>
-        </member>
         <member name="M:Eco.Shared.Networking.NetworkClient.EnqueueReceivedPacket(Eco.Shared.Networking.ReceivedNetworkPacket)">
             <summary>Enqueues received packet to the queue based on network event.</summary>
         </member>
@@ -1695,9 +1685,6 @@
         </member>
         <member name="M:Eco.Shared.Networking.NetMessage.SendPacket(Eco.Shared.Networking.Udp.IUdpPeer,Eco.Shared.Networking.NetworkEvent,Eco.Shared.Serialization.BSONObject,System.Object)">
             <summary> Encodes <paramref name="payload"/> and sends <paramref name="netEvent"/> with it's data to <paramref name="connection"/> (may be obtained from <see cref="E:Eco.Shared.Networking.Udp.IUdpPeer.Connected"/>). </summary>
-        </member>
-        <member name="M:Eco.Shared.Networking.NetMessage.SendPacket(Eco.Shared.Networking.Udp.IUdpPeer,Eco.Shared.Networking.NetworkEvent,Eco.Shared.Serialization.BSONObject,System.Collections.Generic.IEnumerable{System.Object})">
-            <summary> Encodes <paramref name="payload"/> and sends <paramref name="netEvent"/> with it's data to all <paramref name="connections"/> (may be obtained from <see cref="E:Eco.Shared.Networking.Udp.IUdpPeer.Connected"/>). </summary>
         </member>
         <member name="M:Eco.Shared.Networking.NetMessage.DoWithDisconnectReason``1(System.String,``0,System.Boolean,System.Action{``0,Eco.Shared.Networking.NetworkEvent,Eco.Shared.Serialization.BSONObject},System.Int32)">
             <summary> Invokes <paramref name="action"/> with pre-constructed disconnect message object. </summary>
@@ -1830,7 +1817,7 @@
         <member name="M:Eco.Shared.Networking.Udp.IUdpClient.GetStats">
             <summary>Returns network stats like how much bytes sent and received. <see cref="T:Eco.Shared.Networking.NetStats"/> for more details.</summary>
         </member>
-        <member name="M:Eco.Shared.Networking.Udp.IUdpClient.SendData(System.Byte[],System.Int32,System.Int32,System.Byte)">
+        <member name="M:Eco.Shared.Networking.Udp.IUdpClient.SendData(System.ReadOnlySpan{System.Byte},System.Byte)">
             <summary>Sends data to the server peer. Optionally may be provided <paramref name="channel"/>. Reliable sequenced packets delivers independently on different channels.</summary>
         </member>
         <member name="T:Eco.Shared.Networking.Udp.IUdpLibrary">
@@ -1864,11 +1851,14 @@
             Contains common UPD transport methods: like Connect to specific peer, Send to peer or Receive message.
             </summary>
         </member>
-        <member name="M:Eco.Shared.Networking.Udp.IUdpPeer.SendData(System.Object,System.Byte[],System.Int32,System.Int32,System.Byte)">
+        <member name="M:Eco.Shared.Networking.Udp.IUdpPeer.SendData(System.Object,System.ReadOnlySpan{System.Byte},System.Byte)">
             <summary>Sends data to the <paramref name="connection"/> (one of connected peers). Optionally may be provided <paramref name="channel"/>. Reliable sequenced packets delivers independently on different channels.</summary>
         </member>
-        <member name="M:Eco.Shared.Networking.Udp.IUdpPeer.SendData(System.Collections.Generic.IEnumerable{System.Object},System.Byte[],System.Int32,System.Int32,System.Byte)">
+        <member name="M:Eco.Shared.Networking.Udp.IUdpPeer.SendData(System.Collections.Generic.IEnumerable{System.Object},System.ReadOnlySpan{System.Byte},System.Byte)">
             <summary>Sends data to all <paramref name="connections"/>. Optionally may be provided <paramref name="channel"/>. Reliable sequenced packets delivers independently on different channels.</summary>
+        </member>
+        <member name="M:Eco.Shared.Networking.Udp.IUdpServer.BroadcastData(System.ReadOnlySpan{System.Byte})">
+            <summary>Broadcast data to every connected peer.</summary>
         </member>
         <member name="T:Eco.Shared.Networking.Udp.IUnconnectedUdpPeer">
             <summary>
@@ -1978,6 +1968,24 @@
         <member name="F:Eco.Shared.Networking.Udp.SimpleUnconnectedUdpPeer.ENetMtu">
             <summary> ENet Network Library MTU, we should have unconnected messages &lt;= MTU to be received by ENet. </summary>
         </member>
+        <member name="T:Eco.Shared.Networking.Udp.UdpClientExtensions">
+            <summary>Extension methods for <see cref="T:Eco.Shared.Networking.Udp.IUdpClient"/>.</summary>
+        </member>
+        <member name="M:Eco.Shared.Networking.Udp.UdpClientExtensions.SendData(Eco.Shared.Networking.Udp.IUdpClient,System.Byte[],System.Int32,System.Int32,System.Byte)">
+            <summary>Sends data to the server peer. Optionally may be provided <paramref name="channel"/>. Reliable sequenced packets delivers independently on different channels.</summary>
+        </member>
+        <member name="M:Eco.Shared.Networking.Udp.UdpPeerExtensions.SendData(Eco.Shared.Networking.Udp.IUdpPeer,System.Object,System.Byte[],System.Int32,System.Int32,System.Byte)">
+            <summary>Sends data to the <paramref name="connection"/> (one of connected peers). Optionally may be provided <paramref name="channel"/>. Reliable sequenced packets delivers independently on different channels.</summary>
+        </member>
+        <member name="M:Eco.Shared.Networking.Udp.UdpPeerExtensions.SendData(Eco.Shared.Networking.Udp.IUdpPeer,System.Collections.Generic.IEnumerable{System.Object},System.Byte[],System.Int32,System.Int32,System.Byte)">
+            <summary>Sends data to all <paramref name="connections"/>. Optionally may be provided <paramref name="channel"/>. Reliable sequenced packets delivers independently on different channels.</summary>
+        </member>
+        <member name="T:Eco.Shared.Networking.Udp.UdpServerExtensions">
+            <summary>Extension methods for <see cref="T:Eco.Shared.Networking.Udp.IUdpServer"/>.</summary>
+        </member>
+        <member name="M:Eco.Shared.Networking.Udp.UdpServerExtensions.BroadcastData(Eco.Shared.Networking.Udp.IUdpServer,System.Byte[],System.Int32,System.Int32)">
+            <summary>Broadcast data to every connected peer.</summary>
+        </member>
         <member name="T:Eco.Shared.Networking.ViewDistance">
             <summary><see cref="T:Eco.Shared.Networking.ViewDistance"/> structure used by <see cref="T:Eco.Shared.Networking.IWorldObserver"/> for representing view distance optimized for checks. <see cref="F:Eco.Shared.Networking.ViewDistance.Visible"/> is when object is visible in the view distance and <see cref="F:Eco.Shared.Networking.ViewDistance.NotVisible"/> is when object is out of view distance. It usually higher than <see cref="F:Eco.Shared.Networking.ViewDistance.Visible"/> value to avoid too adding and removing objects in the view.</summary>
         </member>
@@ -2075,7 +2083,7 @@
             <param name="list">list which was rented from pool.</param>
         </member>
         <member name="T:Eco.Shared.Pools.ListPool`1.ReturnPromise">
-            <summary>Disposable return promise which returns <see cref="F:Eco.Shared.Pools.ListPool`1.ReturnPromise.value"/> when disposed.</summary>
+            <summary>Disposable return promise which returns <see cref="F:Eco.Shared.Pools.ListPool`1.ReturnPromise.Value"/> when disposed.</summary>
         </member>
         <member name="T:Eco.Shared.Pools.ObjectPoolExtensions">
             <summary>Extension methods for <see cref="T:Eco.Shared.Pools.IObjectPool`1"/> instances.</summary>
@@ -2595,6 +2603,18 @@
         <member name="M:Eco.Shared.Utils.ListExtensions.AddNonNullKey``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
             <summary>Add to the dictionary if the key is not null.</summary>
         </member>
+        <member name="M:Eco.Shared.Utils.ListExtensions.RemoveAll``2(System.Collections.Generic.List{``0},``1,System.Action{``0})">
+            <summary>
+            Removes first item in <paramref name="list"/> matching <paramref name="matcher"/> and calls <paramref name="onRemove"/> action if provided for the removed item.
+            This method may be used with allocation-free struct based predicates instead of closures. Also it may inline predicate body for better performance.
+            </summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ListExtensions.RemoveFirst``2(System.Collections.Generic.List{``0},``1,System.Action{``0})">
+            <summary>
+            Removes first item in <paramref name="list"/> matching <paramref name="matcher"/> and calls <paramref name="onRemove"/> action if provided for the removed item.
+            This method may be used with allocation-free struct based predicates instead of closures. Also it may inline predicate body for better performance.
+            </summary>
+        </member>
         <member name="M:Eco.Shared.Utils.ListExtensions.RemoveFirst``1(System.Collections.Generic.IList{``0},System.Predicate{``0})">
             <summary>Removes first item matching the <paramref name="matcher"/>. Returns <c>true</c> if item was removed.</summary>
         </member>
@@ -2634,7 +2654,7 @@
             <code>listToOrder.OrderByDescending(tree => GetTotalRank(tree)).ToArray().CurveOrder();</code>
             </example>
         </member>
-        <member name="M:Eco.Shared.Utils.DictionaryExtensions.AddOrUpdate``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1,System.Func{``1,``1,``1})">
+        <member name="M:Eco.Shared.Utils.DictionaryExtensions.AddOrUpdate``2(System.Collections.Generic.Dictionary{``0,``1},``0,``1,System.Func{``1,``1,``1})">
             <summary>Add a new element to a dictionary, or update an existing one if the key already exists.
             <paramref name="updateFunc"/> is a function that accepts the existing value and passed value, and returns the new value to store.</summary>
         </member>
@@ -2927,6 +2947,9 @@
             </summary>
             <seealso cref="T:System.IComparable`1"/>
         </member>
+        <member name="T:Eco.Shared.Utils.FuncPredicate`1">
+            <summary>Simple wrapper around <see cref="T:System.Func`2"/> delegate implementing <see cref="T:Eco.Shared.Utils.IPredicate`1"/> interface.</summary>
+        </member>
         <member name="M:Eco.Shared.Utils.GeneralUtils.IsDefault``1(``0)">
             <summary>Tests if a given value is the default.  Used for structs. </summary>
         </member>
@@ -2993,6 +3016,38 @@
             <param name="location">location to change.</param>
             <param name="value">value to subtract.</param>
             <returns>subtracted value: min(location, value).</returns>
+        </member>
+        <member name="T:Eco.Shared.Utils.IPredicate`1">
+             <summary>Interface for allocation-free predicates. You can add a struct which implements the predicate and then use with generic function which uses struct at compile time.</summary>
+             <example><![CDATA[
+             public struct ContainsStringPredicate : IPredicate<string>
+             {
+                 public string SubString { get; set; }
+                 public bool Match(string s) => s.Contains(this.SubString);
+             }
+            
+             public static class Test
+             {
+                 public int CountByFilter<T, TPredicate>(List<T> items, TPredicate filter) where TPredicate : IPredicate<T>
+                 {
+                     var count = 0;
+                     for (var item in items)
+                       if (filter(item)) count++;
+                     return count;
+                 }
+            
+                 public static void CountBySubString(List<string> items, string subStr) => CountByFilter(items, new ContainsStringPredicate { SubString = subStr } );
+             }
+             ]]></example>
+        </member>
+        <member name="M:Eco.Shared.Utils.IPredicate`1.Match(`0)">
+            <summary>Checks if item matches the predicate.</summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.IPredicate`1.ToDelegate">
+            <summary>Converts to <see cref="T:System.Func`2"/> delegate.</summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.IPredicate`1.ToPredicate">
+            <summary>Converts to <see cref="T:System.Predicate`1"/> delegate.</summary>
         </member>
         <member name="T:Eco.Shared.Utils.LockUtils.ExitReadLockOnDispose">
             <summary>
@@ -3465,27 +3520,48 @@
         <member name="M:Eco.Shared.Utils.RandomUtil.Shuffle``1(``0[])">
             <summary> Shortcut for <see cref="M:Eco.Shared.Utils.RandomExtensions.Shuffle``1(System.Random,``0[])"/> with <see cref="P:Eco.Shared.Utils.RandomUtil.Global"/> randomizer. </summary>
         </member>
-        <member name="F:Eco.Shared.Utils.ReflectionUtils.GameAssemblies">
-            <summary> Assemblies required by Eco and mods to perform reflection on. See <see cref="M:Eco.Shared.Utils.ReflectionUtils.RegisterBaseAssemblies"/> and <see cref="M:Eco.Shared.Utils.ReflectionUtils.RegisterAssemblies(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})"/> </summary>
+        <member name="F:Eco.Shared.Utils.ReflectionCache.GameAssemblies">
+            <summary> Assemblies required by Eco and mods to perform reflection on. See <see cref="M:Eco.Shared.Utils.ReflectionCache.RegisterBaseAssemblies"/> and <see cref="M:Eco.Shared.Utils.ReflectionCache.RegisterAssemblies(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})"/> </summary>
         </member>
-        <member name="F:Eco.Shared.Utils.ReflectionUtils.BaseAssembliesName">
+        <member name="F:Eco.Shared.Utils.ReflectionCache.BaseAssembliesName">
             <summary> Assembly names required by Eco for reflection, add as needed.</summary>
         </member>
-        <member name="M:Eco.Shared.Utils.ReflectionUtils.RegisterBaseAssemblies">
+        <member name="M:Eco.Shared.Utils.ReflectionCache.GetSerializableProperties(System.Type)">
+            <summary> Get Serializable Properties of Type using cache </summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionCache.GetPropertiesCached(System.Type)">
+            <summary> Get cached Type Properties, prefer over Type.GetProperties </summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionCache.GetTypesCached(System.Reflection.Assembly)">
+            <summary> Get cached Assembly types, prefer over Assembly.GetTypes </summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionCache.GetExtensionMethods(System.Type)">
+            <summary>Returns all extensions methods for <paramref name="type"/> including those which assignable from <paramref name="type"/>.</summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionCache.HasAttribute(System.Reflection.MemberInfo,System.Type,System.Boolean)">
+            Cache defined Attributes per MemberInfo, for inherited and non-inherited check
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionCache.GetEnumerableType(System.Type)">
+            <summary>Returns element type for array, or first implemented <see cref="T:System.Collections.Generic.IEnumerable`1"/> interface, or of type itself if it is <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionCache.RegisterBaseAssemblies">
             <summary>
             Register assemblies required by Eco for reflection.
-            Called during Server startup as the various Plugins are added which may add new assemblies to <see cref="M:Eco.Shared.Utils.ReflectionUtils.GetAssemblies"/>.
+            Called during Server startup as the various Plugins are added which may add new assemblies to <see cref="M:Eco.Shared.Utils.ReflectionCache.GetAssemblies"/>.
             Also called during Client startup.
             </summary>
         </member>
-        <member name="M:Eco.Shared.Utils.ReflectionUtils.RegisterAssemblies(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+        <member name="M:Eco.Shared.Utils.ReflectionCache.RegisterAssemblies(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
             <summary> Register assemblies for reflection. Used to add mod assemblies at ModKit DLL load. </summary>
         </member>
-        <member name="M:Eco.Shared.Utils.ReflectionUtils.GetAssemblies">
+        <member name="M:Eco.Shared.Utils.ReflectionCache.GetAssemblies">
             <summary> Get all assemblies </summary>
         </member>
-        <member name="M:Eco.Shared.Utils.ReflectionUtils.GetTypesCached(System.Reflection.Assembly)">
-            <summary> Get cached Assembly types, prefer over Assembly.GetTypes </summary>
+        <member name="M:Eco.Shared.Utils.ReflectionUtils.IsSerialized(System.Reflection.MemberInfo)">
+            <summary> Check member is serialized, through SerializedAttribute, EcoAttribute or SerializedDerivedAttribute </summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionUtils.IsSerializedTypeName(System.Reflection.MemberInfo)">
+            <summary>Checks if <see cref ="T:System.Type"/> may be referenced in serialized data, but may not be serialized itself. Any <see cref="M:Eco.Shared.Utils.ReflectionUtils.IsSerialized(System.Reflection.MemberInfo)"/> type is also <see cref="M:Eco.Shared.Utils.ReflectionUtils.IsSerializedTypeName(System.Reflection.MemberInfo)"/>, but not all <see cref="M:Eco.Shared.Utils.ReflectionUtils.IsSerializedTypeName(System.Reflection.MemberInfo)"/> types are <see cref="M:Eco.Shared.Utils.ReflectionUtils.IsSerialized(System.Reflection.MemberInfo)"/>.</summary>
         </member>
         <member name="M:Eco.Shared.Utils.ReflectionUtils.DerivedTypes(System.Type,System.Reflection.Assembly,System.Boolean)">
             <summary> Returns all derived types for <paramref name="baseType"/> optionally in specific <paramref name="assembly"/> and optionally (if <paramref name="includeSelf"/> set) returning the type itself. </summary>
@@ -3514,9 +3590,6 @@
         </member>
         <member name="M:Eco.Shared.Utils.ReflectionUtils.TryCallStatic``1(System.Type,System.String,System.Object[])">
             <summary>Call a static function of the given name, triggering an error if it doesnt exist.  T = return type</summary>
-        </member>
-        <member name="M:Eco.Shared.Utils.ReflectionUtils.GetExtensionMethods(System.Type)">
-            <summary>Returns all extensions methods for <paramref name="type"/> including those which assignable from <paramref name="type"/>.</summary>
         </member>
         <member name="M:Eco.Shared.Utils.ReflectionUtils.AllMembers(System.Type,System.Boolean)">
             <summary> Gets all properties, methods, and extension methods.  Operates either on instance members or static members based on passed bool. </summary>
@@ -3562,9 +3635,6 @@
             <typeparam name="T">Attribute to find,</typeparam>
             <param name="assembly">Assembly to check,</param>
             <returns><see cref="T:System.Collections.Generic.IEnumerable`1"/> containing all the found types.</returns>
-        </member>
-        <member name="M:Eco.Shared.Utils.ReflectionUtils.GetEnumerableType(System.Type)">
-            <summary>Returns element type for array, or first implemented <see cref="T:System.Collections.Generic.IEnumerable`1"/> interface, or of type itself if it is <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</summary>
         </member>
         <member name="M:Eco.Shared.Utils.ReflectionUtils.TryGetGenericInterface(System.Type,System.Type,System.Type@)">
             <summary>Tries to get <paramref name="genericInterface"/> constructed from <paramref name="genericInterfaceDefinition"/> implemented by <paramref name="type"/>.</summary>
@@ -3648,6 +3718,10 @@
         </member>
         <member name="M:Eco.Shared.Utils.ReflectionUtils.GetTypeByGenericTypeDefinitionInHierarchy(System.Type,System.Type)">
             <summary>Returns (if exists) type corresponding to <paramref name="genericTypeDefinition"/> in <paramref name="type"/> hierarchy. I.e. if when check for List{}: List{string} -> List{string}, IntList : List{int} -> List{int}.</summary>
+        </member>
+        <member name="M:Eco.Shared.Utils.ReflectionUtils.GetDefaultValue(System.Type)">
+            <summary>Returns default value for <paramref name="type"/>.</summary>
+            <returns>Same as default(T) via reflection.</returns>
         </member>
         <member name="M:Eco.Shared.Utils.Text.SignedNum(System.Single,System.Boolean,System.Boolean)">
             <summary> Returns styled number with forded sign ('+' - for positive, '-' - for negative, no sign for zero). If <paramref name="invertHighlight"/> set then it will use negative highlight for positive value. </summary>
@@ -4024,7 +4098,7 @@
         <member name="M:Eco.Shared.Serialization.BsonManipulator.ObjectTypeHandler(Eco.Shared.Serialization.BSONValue)">
             <summary> Unpacks object from <see cref="T:Eco.Shared.Serialization.BSONValue"/>. </summary>
         </member>
-        <member name="M:Eco.Shared.Serialization.BsonManipulator.ToBsonDictionary``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},Eco.Shared.Networking.INetClient,System.Boolean)">
+        <member name="M:Eco.Shared.Serialization.BsonManipulator.ToBsonDictionary``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},Eco.Shared.Serialization.BsonSerializationContext@,System.Boolean)">
             <summary>Serializes enumerable of key-value pairs as BSON dictionary.</summary>
         </member>
         <member name="M:Eco.Shared.Serialization.BsonManipulator.MakeGenericDictionarySerializer``2">
@@ -4121,6 +4195,10 @@
         <member name="M:Eco.Shared.Serialization.BSONObject.TryGetInt32ArrayValueAsList(System.String,System.Collections.Generic.List{System.Int32}@)">
             <summary> Returns value for <paramref name="key"/> converted to <see cref="T:System.Collections.Generic.List`1"/>. </summary>
         </member>
+        <member name="T:Eco.Shared.Serialization.BsonSerializationContext">
+            <summary> This is used when you send views to some client. Client is necesary to bind to him controllers and to get right value for params PropertyName(Player player).
+            RelatedControllers are used for caching system, so when you cache some view it will be known which exact controllers you should package too (otherwise you could get cached value that refers not-existed at your side controllers). </summary>
+        </member>
         <member name="T:Eco.Shared.Serialization.BSONSimpleValue">
             <summary>Represents simple value (like float, double, int, string etc).</summary>
         </member>
@@ -4168,6 +4246,15 @@
         </member>
         <member name="M:Eco.Shared.Serialization.BSONValue.SimpleValueFromCollection``1(System.Collections.Generic.ICollection{``0},Eco.Shared.Serialization.BSONValueType)">
             <summary>Private method used by other FromCollection methods to make a <see cref="T:Eco.Shared.Serialization.BSONValue"/> from <paramref name="values"/>.</summary>
+        </member>
+        <member name="T:Eco.Shared.Serialization.BsonValueBackgroundRecycler">
+            <summary>BSON Values background recycler. <see cref="M:Eco.Shared.Serialization.BsonValueBackgroundRecycler.RecycleInBackground(Eco.Shared.Serialization.BSONValue)"/> may be used to move <see cref="T:Eco.Shared.Serialization.BSONValue"/> recycling out of executing thread to save CPU resources where it is critical.</summary>
+        </member>
+        <member name="M:Eco.Shared.Serialization.BsonValueBackgroundRecycler.RecycleTask">
+            <summary>Background worker which recycles BSON values from queue.</summary>
+        </member>
+        <member name="M:Eco.Shared.Serialization.BsonValueBackgroundRecycler.RecycleInBackground(Eco.Shared.Serialization.BSONValue)">
+            <summary>Recycles <paramref name="bsonValue"/> in background. Not guaranteed when it will be recycled. May be used in performance critical code to save CPU time on recycling, but usually it is better to use <see cref="M:Eco.Shared.Serialization.BSONValue.Recycle"/> for faster returning resources back to pool.</summary>
         </member>
         <member name="T:Eco.Shared.Serialization.BSONValueFactory`1">
             <summary>Reusable <see cref="T:Eco.Shared.Serialization.BSONValue"/> values factory.</summary>
@@ -4561,11 +4648,58 @@
         <member name="T:Eco.Shared.View.ISubscription">
             <summary>Interface for all subscription classes. May be either <see cref="T:Eco.Shared.View.Subscriptions"/> for subscriptions group or <see cref="T:Eco.Shared.View.IPropertySubscription"/>.</summary>
         </member>
+        <member name="M:Eco.Shared.View.ISubscription.ReturnToPool">
+            <summary>Optional ReturnToPool method (returns subscription to pool if possible).</summary>
+        </member>
         <member name="T:Eco.Shared.View.ISubscriptions">
+            <summary>Untyped version of <see cref="T:Eco.Shared.View.ISubscriptions`1"/> with <see cref="M:Eco.Shared.View.ISubscriptions.UnsubscribeAll"/> and <see cref="M:Eco.Shared.View.ISubscriptions.ReleaseSubscriptionsList"/> methods which may be useful for destroy/dispose methods which unaware of subscriptions list type.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptions.UnsubscribeAll">
+            <summary>Unsubscribe all subscriptions in the subscriptions list.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptions.ReleaseSubscriptionsList">
+            <summary><see cref="M:Eco.Shared.View.ISubscriptions.UnsubscribeAll"/> and release subscriptions list.</summary>
+        </member>
+        <member name="T:Eco.Shared.View.ISubscriptions`1">
             <summary>
             This is a replacement for IAnonymousSubscriber.
             This simplifies Subscription management, because you can use it with extension methods for easy subscription management.
             </summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptions`1.GetOrCreateSubscriptionsList">
+            <summary>Gets existing or creates new <see cref="P:Eco.Shared.View.ISubscriptions`1.Subscriptions"/> list.</summary>
+        </member>
+        <member name="T:Eco.Shared.View.ISubscriptionsList">
+            <summary>Base interface for subscriptions lists (may be thread-safe or thread-unsafe list implementation). It also may support pooling.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptionsList.UnsubscribeAll``1(``0)">
+            <summary>Unsubscribe all subscriptions matching predicate.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptionsList.UnsubscribeFirst``1(``0)">
+            <summary>Unsubscribes fist subscription matching <paramref name="predicate"/>.</summary>
+            <returns><c>true</c> if a match was found and unsubscribed.</returns>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptionsList.RemoveSubscription(Eco.Shared.View.ISubscription)">
+            <summary>Unsubscribes specific <paramref name="subscription"/>.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptionsList.AddSubscription(Eco.Shared.View.ISubscription)">
+            <summary>Adds new <paramref name="subscription"/> to <see cref="T:Eco.Shared.View.ISubscriptionsList"/>.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptionsList.UnsubscribeAll">
+            <summary>Unsubscribes all previously added subscriptions and cleans subscription collection.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISubscriptionsList.ReleaseSubscription(Eco.Shared.View.ISubscription)">
+            <summary>Releases unsubscribed <paramref name="subscription"/>.</summary>
+        </member>
+        <member name="T:Eco.Shared.View.ISupportNestedSubscriptions`1">
+            <summary>Interface which may be implemented for nested subscriptions support.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.ISupportNestedSubscriptions`1.AddNestedSubscriptions">
+            <summary>Makes and adds new nested subscriptions.</summary>
+        </member>
+        <member name="T:Eco.Shared.View.IThreadUnsafeSubscriptions">
+            <summary>Thread-unsafe implementation of <see cref="T:Eco.Shared.View.ISubscriptions`1"/>. Suitable for client code where all subscriptions happens in main-thread.</summary>
+            <inheritdoc />
         </member>
         <member name="T:Eco.Shared.View.NoOpPropertySubscription">
             <summary>
@@ -4583,9 +4717,6 @@
         </member>
         <member name="T:Eco.Shared.View.PropertySubscriptionBase">
             <summary>Base class for all property subscriptions.</summary>
-        </member>
-        <member name="T:Eco.Shared.View.SentinelSubscriptions">
-            <summary>Wrapper for <see cref="P:Eco.Shared.View.SentinelSubscriptions.Subscriptions"/> which ensures no access to released subscriptions.</summary>
         </member>
         <member name="T:Eco.Shared.View.ISubscribableEvent">
             <summary>Interface for subscribable events (i.e. <see cref="T:Eco.Shared.View.SubscribableEvent`1"/>). Declared as interface so all classes may work with common interface no matter which type of wrapped event.</summary>
@@ -4608,45 +4739,68 @@
             It also may be used as ISubscription to keep sub-collection of subscriptions and unsubscribed together with main collection.
             </summary>
         </member>
+        <member name="M:Eco.Shared.View.Subscriptions.Rent">
+            <summary>Rents <see cref="T:Eco.Shared.View.Subscriptions"/> from the pool.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.Subscriptions.Return(Eco.Shared.View.Subscriptions)">
+            <summary>Returns rented <see cref="T:Eco.Shared.View.Subscriptions"/> back to pool.</summary>
+        </member>
         <member name="T:Eco.Shared.View.SubscriptionsExtensions">
-            <summary>Extension methods for <see cref="T:Eco.Shared.View.ISubscriptions"/>.</summary>
+            <summary>Extension methods for <see cref="T:Eco.Shared.View.ISubscriptions`1"/>.</summary>
         </member>
         <member name="F:Eco.Shared.View.SubscriptionsExtensions.CreatePropertySubscription">
             <summary>Function which creates IPropertySubscription, for server it will create ImmutablePropertySubscription instead of PropertySubscription, because it is thread-safe</summary>
         </member>
-        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll(Eco.Shared.View.ISubscriptions,System.Boolean)">
-            <summary>
-            Unsubscribes all previously added subscriptions and cleans subscription collection.
-            </summary>
-            <param name="ss">this ref.</param>
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll``1(Eco.Shared.View.ISubscriptions{``0},System.Func{Eco.Shared.View.ISubscription,System.Boolean})">
+            <summary>Unsubscribe all subscriptions matching predicate.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeFirst``1(Eco.Shared.View.ISubscriptions{``0},System.Func{Eco.Shared.View.ISubscription,System.Boolean})">
+            <summary>Unsubscribes fist subscription matching <paramref name="predicate"/>.</summary>
+            <returns><c>true</c> if a match was found and unsubscribed.</returns>
+        </member>
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll``2(Eco.Shared.View.ISubscriptions{``0},``1)">
+            <summary>Unsubscribe all subscriptions matching predicate.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeFirst``2(Eco.Shared.View.ISubscriptions{``0},``1)">
+            <summary>Unsubscribes fist subscription matching <paramref name="predicate"/>.</summary>
+            <returns><c>true</c> if a match was found and unsubscribed.</returns>
+        </member>
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.RemoveSubscription``1(Eco.Shared.View.ISubscriptions{``0},Eco.Shared.View.ISubscription)">
+            <summary>Unsubscribes specific <paramref name="subscription"/>.</summary>
+        </member>
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll``1(Eco.Shared.View.ISubscriptions{``0},System.Boolean)">
+            <summary>Unsubscribes all previously added subscriptions and cleans subscription collection.</summary>
             <param name="release">by default Subscriptions list will be just cleared and then may be reused without recreation of list, but if Subscriptions won't be used anymore they may be released and returned to pool.</param>
         </member>
-        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAllForSubject(Eco.Shared.View.ISubscriptions,Eco.Shared.View.IObservable)">
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAllForSubject``1(Eco.Shared.View.ISubscriptions{``0},Eco.Shared.View.IObservable)">
             <summary>
             Unsubscribe all subscriptions for given subject.
             </summary>
             <param name="ss">this ref.</param>
             <param name="subject">subject to unsubscribe.</param>
         </member>
-        <member name="M:Eco.Shared.View.SubscriptionsExtensions.Unsubscribe(Eco.Shared.View.ISubscriptions,Eco.Shared.View.ISubscription)">
-            <summary>Unsubscribe and stop tracking a single subscription.</summary>
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.MakeNestedSubscriptions``1(Eco.Shared.View.ISubscriptions{``0})">
+            <summary>Makes nested subscriptions collection working as subset of <paramref name="ss"/>. It will be unsubscribed when <see cref="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll``1(Eco.Shared.View.ISubscriptions{``0},System.Func{Eco.Shared.View.ISubscription,System.Boolean})"/> called on <paramref name="ss"/>, but may when <see cref="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll``1(Eco.Shared.View.ISubscriptions{``0},System.Func{Eco.Shared.View.ISubscription,System.Boolean})"/> called on this it will only clear nested subscriptions.</summary>
         </member>
-        <member name="M:Eco.Shared.View.SubscriptionsExtensions.MakeNestedSubscriptions(Eco.Shared.View.ISubscriptions)">
-            <summary> Makes nested subscriptions collection working as subset of <paramref name="ss"/>. It will be unsubscribed when <see cref="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll(Eco.Shared.View.ISubscriptions,System.Boolean)"/> called on <paramref name="ss"/>, but may when <see cref="M:Eco.Shared.View.SubscriptionsExtensions.UnsubscribeAll(Eco.Shared.View.ISubscriptions,System.Boolean)"/> called on this it will only clear nested subscriptions. </summary>
-        </member>
-        <member name="M:Eco.Shared.View.SubscriptionsExtensions.DestroyNestedSubscriptions(Eco.Shared.View.ISubscriptions,Eco.Shared.View.ISubscriptions)">
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.DestroyNestedSubscriptions``1(Eco.Shared.View.ISubscriptions{``0},``0)">
             <summary>
-            Destroys nested subscriptions previously created with <see cref="M:Eco.Shared.View.SubscriptionsExtensions.MakeNestedSubscriptions(Eco.Shared.View.ISubscriptions)"/>.
+            Destroys nested subscriptions previously created with <see cref="M:Eco.Shared.View.SubscriptionsExtensions.MakeNestedSubscriptions``1(Eco.Shared.View.ISubscriptions{``0})"/>.
             It will unsubscribe all subscriptions in <paramref name="nested"/> and remove from <paramref name="subs"/>.
             Destroyed nested subscriptions can't be used, because they will be recycled and continue using it will lead to unpredictable behavior.
             </summary>
         </member>
-        <member name="M:Eco.Shared.View.SubscriptionsExtensions.TrySubscribe(Eco.Shared.View.ISubscriptions,Eco.Shared.View.IPropertySubscription)">
+        <member name="M:Eco.Shared.View.SubscriptionsExtensions.TrySubscribe``1(Eco.Shared.View.ISubscriptions{``0},Eco.Shared.View.IPropertySubscription)">
             <summary> Tries to add <paramref name="subscription"/> to <paramref name="ss"/>. Internally it subscribes on <see cref="P:Eco.Shared.View.IPropertySubscription.Subject"/>. If subscription already was added to same property with same callback then it will return <c>false</c> and won't add subscription. </summary>
         </member>
         <member name="M:Eco.Shared.View.SubscriptionsExtensions.SubscribeWithoutTracking(Eco.Shared.View.IObservable,System.String,System.Action)">
             <summary>Creates a subscription but doesnt track it within a Subscriptions object. Should only be used when something is subscribing to its own properties,
             meaning both 'watched' and 'watcher' are a single object and die at the same time.</summary>
+        </member>
+        <member name="T:Eco.Shared.View.PropertySubscriptionFilter">
+            <summary>Filter for property subscription with matching <see cref="F:Eco.Shared.View.PropertySubscriptionFilter.subject"/>, <see cref="F:Eco.Shared.View.PropertySubscriptionFilter.propertyName"/> and <see cref="F:Eco.Shared.View.PropertySubscriptionFilter.changedCallback"/>.</summary>
+        </member>
+        <member name="T:Eco.Shared.View.PropertySubjectSubscriptionFilter">
+            <summary>Filter for property subscription with matching <see cref="F:Eco.Shared.View.PropertySubjectSubscriptionFilter.subject"/>.</summary>
         </member>
         <member name="F:Eco.Shared.View.View.NoOpSubscription">
             <summary> When a property callback removed during notifying the property. It will replace removed callback to avoid invoke on invalid subscription. </summary>
@@ -4884,7 +5038,10 @@
         <member name="T:Eco.Shared.Voxel.PlotUtil">
             <summary> Functions for translating to/from property plot coordinates. </summary>
         </member>
-        <member name="F:Eco.Shared.Voxel.PlotUtil.WorldPlotDims">
+        <member name="M:Eco.Shared.Voxel.PlotUtil.SetWrappedWorldSize(Eco.Shared.Math.Vector3i)">
+            <summary>Sets wrapped world size. Need to be called before first PlotUtil usage.</summary>
+        </member>
+        <member name="P:Eco.Shared.Voxel.PlotUtil.WorldPlotDims">
             <summary> Returns many plots exist in the x and z dimensions of the world. </summary>
         </member>
         <member name="M:Eco.Shared.Voxel.PlotUtil.ToPlotPos(Eco.Shared.Math.Vector2i)">
