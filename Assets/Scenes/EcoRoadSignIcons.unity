@@ -2682,7 +2682,7 @@ GameObject:
   - component: {fileID: 374362577}
   - component: {fileID: 374362576}
   m_Layer: 0
-  m_Name: RoadSignC26-1Image
+  m_Name: RoadSignC26-2Image
   m_TagString: ModImage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
