@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Unity.Jobs.LowLevel.Unsafe;
-
 using UnityEditor;
-using UnityEditor.SearchService;
+using UnityEditor.SceneManagement;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,35 +12,72 @@ namespace Eco.Client
 {
     public class GenerateIconsTool
     {
+        private static readonly string _sceneName = "EcoRoadSignIcons";
+        private static readonly string _sceneRootParentName = "Items";
+        private static readonly string _prefabTemplatePath = "Assets/IconPrefab.prefab";
+
+        private static readonly string _iconsPath = "Assets/Images";
+        private static readonly string _iconsFiletype = ".png";
+
         [MenuItem("Tools/Generate Icons")]
         private static void GenerateIcons()
         {
-            AssetDatabase.Refresh();
+            var icons = ImportIcons();
+            var scene = PrepareScene();
 
-            var iconsToGenerate = Directory.GetFiles("Assets/Images").Where(x => x.EndsWith(".png")).ToList();
+            var prefabTemplate = AssetDatabase.LoadAssetAtPath(_prefabTemplatePath, typeof(GameObject));
 
-            foreach (var icon in iconsToGenerate)
-            {
-                var asset = AssetImporter.GetAtPath(icon) as TextureImporter;
-                asset.textureShape = TextureImporterShape.Texture2D;
-                asset.textureType = TextureImporterType.Sprite;
-                asset.alphaIsTransparency = true;
-                
-                asset.SaveAndReimport();
-            }
+            CreateIcons(scene, icons, prefabTemplate);
+        }
 
-            var scene = SceneManager.GetSceneByName("EcoRoadSignIcons");
+        private static void CreateIcons(Scene scene, List<AssetImporter> icons, Object prefabTemplate)
+        {
+            var rootObjects = scene.GetRootGameObjects();
+            var itemsObjects = rootObjects.First(x => x.GetScenePath() == _sceneRootParentName);
+
+            var iconGO = PrefabUtility.InstantiatePrefab(prefabTemplate, scene) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(iconGO, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+
+            iconGO.transform.SetParent(itemsObjects.transform, false);
+        }
+
+        private static Scene PrepareScene()
+        {
+            var scene = SceneManager.GetSceneByName(_sceneName);
 
             var rootObjects = scene.GetRootGameObjects();
-            var itemsObjects = rootObjects.First(x => x.GetScenePath() == "Items");
+            var itemsObjects = rootObjects.First(x => x.GetScenePath() == _sceneRootParentName);
 
             var itemChildren = itemsObjects.GetChildren();
 
-            //foreach (var item in itemChildren)
-            //{
-            //    Object.DestroyImmediate(item);
-            //}
+            foreach (var item in itemChildren)
+            {
+                Object.DestroyImmediate(item);
+            }
 
+            return scene;
+        }
+
+        private static List<AssetImporter> ImportIcons()
+        {
+            AssetDatabase.Refresh();
+
+            var iconsToGenerate = Directory.GetFiles(_iconsPath).Where(x => x.EndsWith(_iconsFiletype)).ToList();
+
+            var assets = new List<AssetImporter>();
+            foreach (var icon in iconsToGenerate)
+            {
+                var asset = AssetImporter.GetAtPath(icon) as TextureImporter;
+                assets.Add(asset);
+
+                asset.textureShape = TextureImporterShape.Texture2D;
+                asset.textureType = TextureImporterType.Sprite;
+                asset.alphaIsTransparency = true;
+
+                asset.SaveAndReimport();
+            }
+
+            return assets;
         }
     }
 }
