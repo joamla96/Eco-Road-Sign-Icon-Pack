@@ -20,6 +20,8 @@ namespace Eco.Client
 
         private static readonly string _iconsPath = "Assets/Images";
         private static readonly string _iconsFiletype = ".png";
+
+        private static readonly string _iconPrefix = "RoadSign";
         private static readonly string _iconSuffix = "Image";
 
         [MenuItem("Tools/Generate Icons")]
@@ -45,7 +47,7 @@ namespace Eco.Client
                 PrefabUtility.UnpackPrefabInstance(iconGO, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
 
                 iconGO.transform.SetParent(itemsObjects.transform, false);
-                iconGO.name = GetAssetName(icon.assetPath) + _iconSuffix;
+                iconGO.name = _iconPrefix + GetAssetName(icon.assetPath) + _iconSuffix;
 
                 var imageComponent = iconGO.GetComponent<UnityEngine.UI.Image>();
                 imageComponent.sprite = (Sprite)AssetDatabase.LoadAssetAtPath(icon.assetPath, typeof(Sprite));
