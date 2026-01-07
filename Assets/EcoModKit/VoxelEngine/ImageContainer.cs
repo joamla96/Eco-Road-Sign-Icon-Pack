@@ -4,14 +4,12 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.U2D;
 
 /// <summary>
 /// A container for holding a group of sprites and returning them in a dictionary keyed to their names for later lookup.
 /// </summary>
-public class ImageContainer : MonoBehaviour
+public class ImageContainer : TrackableBehavior
 {
     public Sprite[] Sprites = Array.Empty<Sprite>();
 }

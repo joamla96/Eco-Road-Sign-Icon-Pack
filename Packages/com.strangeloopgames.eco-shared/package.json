@@ -4,8 +4,10 @@
     "version": "0.0.0",
     "unity": "2019.2",
     "unityRelease": "0f1",
-    "dependencies": {
-    },
+    "dependencies": {},
     "description": "Eco shared libraries.",
-    "keywords": [ "eco", "shared", "strangeloopgames" ]
+    "keywords": ["eco", "shared", "strangeloopgames"],
+    "author": {
+        "name": "Strange Loop Games"
+    }
 }

@@ -2,4 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 // Parts which should be skinned to the skeleton
-public partial class AvatarSkinnedPart : AvatarPart { }
+namespace Eco.Avatar.Internal
+{
+    public partial class AvatarSkinnedPart : AvatarPart { }
+}

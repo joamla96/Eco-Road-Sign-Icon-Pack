@@ -1,3 +1,6 @@
+// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using Eco.Shared.Utils;
@@ -45,7 +48,9 @@ public class CustomAnimsetOverrideEditor : Editor
 
         // Draw special field to get states from target animator. Just for
         this.DrawStateExtractorField();
-        
+
+        this.DrawStatesFPVIdle();
+
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -61,6 +66,17 @@ public class CustomAnimsetOverrideEditor : Editor
             this.data.OverrideStates.Add(new AnimsetOverrideItem("FPV_Hands_Climb"));
             this.data.OverrideStates.Add(new AnimsetOverrideItem("FPV_Hands_Swimming"));
             this.data.OverrideStates.Add(new AnimsetOverrideItem("FPV_Hands_Stone_Axe_Work"));
+
+            this.DrawStatesFPVIdle();
+        }
+    }
+
+    void DrawStatesFPVIdle()
+    {
+        if (GUILayout.Button("Add FPV Idle Start_Exit"))
+        {
+            this.data.OverrideStates.Add(new AnimsetOverrideItem("FPV_Hands_Idle_Start"));
+            this.data.OverrideStates.Add(new AnimsetOverrideItem("FPV_Hands_Idle_Exit"));
         }
     }
 

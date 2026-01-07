@@ -1,0 +1,7 @@
+﻿<Solution>
+  <Project Path="Editor.EcoModKit.csproj" />
+  <Project Path="Editor.VoxelEngine.csproj" />
+  <Project Path="Eco.Client.Utils.csproj" />
+  <Project Path="Eco.Client.csproj" />
+  <Project Path="ThirdPartyPublic.csproj" />
+</Solution>

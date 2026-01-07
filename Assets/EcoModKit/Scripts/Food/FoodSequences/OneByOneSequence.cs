@@ -1,3 +1,6 @@
+// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
 using UnityEngine;
 
 // Bite sequence for food items when we have separate parts only, so full food object requires all objects active, and for bites it just hides proper sets of objects

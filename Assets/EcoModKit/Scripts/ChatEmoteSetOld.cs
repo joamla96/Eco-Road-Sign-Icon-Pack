@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>Represents a emote set usable by the chat emote manager.</summary>
 /// <seealso cref="MonoBehaviour"/>
 /// <inheritdoc/>
-public class ChatEmoteSetOld : MonoBehaviour
+public class ChatEmoteSetOld : TrackableBehavior
 {
     /// <summary><see cref="ChatEmote"/> instances registered to this emote set.</summary>
     public ChatEmote[] Emotes;

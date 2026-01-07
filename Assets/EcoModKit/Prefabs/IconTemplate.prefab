@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4059386009997292134}
   - component: {fileID: 5077151630596582696}
   - component: {fileID: 3170259477103212750}
-  - component: {fileID: 8162757451506154442}
+  - component: {fileID: 124809911710130159}
   m_Layer: 0
   m_Name: IconName
   m_TagString: Untagged
@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textType: 0
---- !u!114 &8162757451506154442
+--- !u!114 &124809911710130159
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -187,12 +187,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1181707173991786769}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a215b3805f311c4490e322bb6daf5bc, type: 3}
+  m_Script: {fileID: 11500000, guid: 50e81934da1ddac4885139e6b7b98fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isNewlyAdded: 0
-  text: {fileID: 0}
-  replaceWithParam: []
 --- !u!1 &3790829592459009853
 GameObject:
   m_ObjectHideFlags: 0

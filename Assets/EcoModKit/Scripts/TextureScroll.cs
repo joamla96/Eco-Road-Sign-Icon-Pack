@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+using System.Collections;
 using UnityEngine;
 /// <summary>
 /// Use this class for scrolling texture on conveyor belts.
 /// </summary>
-public class TextureScroll : MonoBehaviour
+public class TextureScroll : TrackableBehavior
 {
     public int materialIndex; //Index of the material which is to be scrolled. Assign from inspector.
     public UnityEngine.Vector2 direction = new UnityEngine.Vector2(1, 0);

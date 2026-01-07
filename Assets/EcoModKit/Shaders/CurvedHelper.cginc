@@ -8,6 +8,7 @@
 float _WorldRadius;
 float4 _WorldCenter;
 
+
 float3 slerp(float3 p0, float3 p1, float t)
 {
 	float cosHalfTheta = dot(p0, p1);

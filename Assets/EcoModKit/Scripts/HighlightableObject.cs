@@ -4,7 +4,7 @@
 using UnityEngine;
 
 // Do not remove base class as it is needed for modkit
-public partial class HighlightableObject : MonoBehaviour
+public partial class HighlightableObject : SubscribableBehavior
 {
     public bool seeThrough;
     

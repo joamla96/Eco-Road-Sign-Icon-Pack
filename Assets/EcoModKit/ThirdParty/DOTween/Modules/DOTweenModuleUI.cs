@@ -1,8 +1,6 @@
 ﻿// Author: Daniele Giardini - http://www.demigiant.com
 // Created: 2018/07/13
 
-#if true && (UNITY_4_6 || UNITY_5 || UNITY_2017_1_OR_NEWER) // MODULE_MARKER
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening.Core;
@@ -12,7 +10,7 @@ using DG.Tweening.Plugins.Options;
 #pragma warning disable 1591
 namespace DG.Tweening
 {
-	public static class DOTweenModuleUI
+    public static class DOTweenModuleUI
     {
         #region Shortcuts
 
@@ -606,4 +604,3 @@ namespace DG.Tweening
         }
 	}
 }
-#endif

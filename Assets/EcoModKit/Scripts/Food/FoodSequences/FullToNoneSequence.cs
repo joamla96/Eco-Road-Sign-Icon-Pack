@@ -1,3 +1,6 @@
+// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
 using UnityEngine;
 
 // Bite sequence for food items like tomatoes, when we have FULL food model, and them next state will be like next separate bite object

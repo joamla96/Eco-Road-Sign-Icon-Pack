@@ -118,9 +118,8 @@ public partial class OffsetCondition
 
     public override string ToString()
     {
-        if (rules.Count == 1)
-            return rules[0].ToString();
-
-        return string.Join("\n", rules.Select(rule => rule.ToString()).ToArray());
+        if (rules == null) return "";                                               // return an empty string when we are just previewing the offset before rules are added
+        if (rules.Count == 1) return rules[0].ToString();                           // return the rule string if there is only one rule
+        return string.Join("\n", rules.Select(rule => rule.ToString()).ToArray());  // return a list of rules if there are multiple
     }
 }

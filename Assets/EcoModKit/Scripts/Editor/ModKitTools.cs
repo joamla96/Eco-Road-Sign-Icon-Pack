@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 public class ModExporter : EditorWindow
 {
@@ -10,7 +14,7 @@ public class ModExporter : EditorWindow
     private string sceneName = string.Empty;
     private bool forceTag = false;
 
-    [MenuItem("ModKit/ModKit Tools...")]
+    [MenuItem("Eco Tools/Mod Kit/ModKit Tools...")]
     public static void ShowWindow()
     {
         GetWindow<ModExporter>("ModKit Tools");
@@ -61,7 +65,7 @@ public class ModExporter : EditorWindow
                 }
             }
         }
-        
+
         if (GUILayout.Button("Nuke all bundle tags"))
         {
             var allBundles = AssetDatabase.GetAllAssetBundleNames();
@@ -88,15 +92,15 @@ public class ModExporter : EditorWindow
         return manifest;
     }
 
-    [MenuItem("ModKit/Build Current Bundle")]
+    [MenuItem("Eco Tools/Mod Kit/Build Current Bundle")]
     public static void BuildSceneBundle()
     {
-        if (EditorSceneManager.loadedSceneCount > 1)
+        if (SceneManager.loadedSceneCount > 1)
         {
             EditorUtility.DisplayDialog("Build Error", "Only one scene should be open while building, please close other scenes", "OK");
             return;
         }
-        
+
         // Force disable stripUnusedMeshComponents. When enabled Unity will attempt to "optimize" the included
         // meshes by removing the tangent list used by the mesh builders.
         PlayerSettings.stripUnusedMeshComponents = false;
@@ -147,10 +151,10 @@ public class ModExporter : EditorWindow
                 root.SetActive(activeState[root.name]);
     }
 
-    [MenuItem("ModKit/Enable Curve")]
+    [MenuItem("Eco Tools/Mod Kit/Enable Curve")]
     public static void EnableCurve() { Shader.EnableKeyword("NO_CURVE"); }
 
-    [MenuItem("ModKit/Disable Curve")]
+    [MenuItem("Eco Tools/Mod Kit/Disable Curve")]
     public static void DisableCurve() { Shader.DisableKeyword("NO_CURVE"); }
 
 }

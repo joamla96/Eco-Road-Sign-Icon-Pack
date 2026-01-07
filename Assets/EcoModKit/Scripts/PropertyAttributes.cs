@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+using UnityEngine;
 
 /// <summary>
 /// Automatically hooks up a property to a component on the same gameobject in the editor. Useful for skipping GetComponent calls.

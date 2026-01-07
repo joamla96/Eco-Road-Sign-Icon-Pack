@@ -1,7 +1,7 @@
 #ifndef INDIRECT_RENDERING_CORE_INCLUDED
+#if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED)
 #define INDIRECT_RENDERING_CORE_INCLUDED
 
-#ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
 #include "IndirectRenderingParams.hlsl"
 
     StructuredBuffer<IndirectRenderingParams> renderingParamsBuffer;
@@ -16,5 +16,4 @@
 
 #define INDIRECT_RENDERING_PARAMS renderingParamsBuffer[unity_InstanceID]
 #endif
-
 #endif

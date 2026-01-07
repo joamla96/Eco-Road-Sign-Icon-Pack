@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+using UnityEngine;
 using UnityEditor;
- 
+
 [CustomPropertyDrawer(typeof(EnumFlagsMaskAttribute))]
 public class EnumFlagsMaskAttributeDrawer : PropertyDrawer
 {

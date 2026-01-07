@@ -1,10 +1,13 @@
-﻿using UnityEngine;
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+using UnityEngine;
 
 /// <summary>
 /// Component to turn any object to biteable thing. Can be reused for any object that can have sub-states, so not only for food.
 /// Has basic logic for object states, applies sequences from FoodBiteSequence classes for animation and process control
 /// </summary>
-public class BiteableFoodObject : MonoBehaviour
+public class BiteableFoodObject : TrackableBehavior
 {
     [Header("Core config")]
     [Tooltip("Collection of food parts. All the bites by size descending")]
@@ -42,4 +45,9 @@ public class BiteableFoodObject : MonoBehaviour
     // Its better to keep clear transform on main biteable object class (for artists easier edits). So those will be applied in runtime
     public Vector3 PositionOffset;
     public Vector3 RotationOffset;
+
+    void Awake() => this.gameObject.GetOrAddComponent<BiteableFoodObjectController>();
 }
+
+// Modkit system needs to know about the existence of controller
+public partial class BiteableFoodObjectController : SubscribableBehavior { }

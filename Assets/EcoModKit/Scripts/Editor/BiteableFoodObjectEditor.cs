@@ -1,4 +1,7 @@
-﻿    #if UNITY_EDITOR
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+    #if UNITY_EDITOR
     using System.Collections.Generic;
     using System.Linq;
     using UnityEditor;
@@ -83,26 +86,16 @@
         // Simplifies setup for food with adding interaction components
         void DrawComponentSetupButton()
         {
-            void AddInteraction()
-            {
-                var interaction = this.data.gameObject.GetOrAddComponent<ToolInteraction>();
-                interaction.HasTakeAnimation = true;
-                interaction.HasPlaceAnimation = true;
-                interaction.PlaceRequiresCalories = false;
-                interaction.TakeRequiresCalories = false;
-            }
-
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Add FPV components"))
             {
-                AddInteraction();
-                this.data.gameObject.GetOrAddComponent<PerformInteraction>();
+                this.data.gameObject.GetOrAddComponent<ItemAnimationData>();
                 EditorUtility.SetDirty(this.data);
             }
             
             if (GUILayout.Button("Add TPV components"))
             {
-                AddInteraction();
+                this.data.gameObject.GetOrAddComponent<ItemAnimationData>();
                 EditorUtility.SetDirty(this.data);
             }
             EditorGUILayout.EndHorizontal();
@@ -184,7 +177,7 @@
         // Shows warnings if the component is set up incorrectly.
         void ShowCurrentState()
         {
-            var tool = this.data.GetComponent<ToolInteraction>();
+            var tool = this.data.GetComponent<ItemAnimationData>();
             if (tool == null) return;
             if (tool.CustomAnimset == null && this.data.DefaultAnimationOverride == PredefinedFoodAnimations.Custom)
                 EditorGUILayout.HelpBox("If [DefaultAnimationOverride = Custom] make sure to give [ToolInteraction.CustomAnimset] a value", MessageType.Error);

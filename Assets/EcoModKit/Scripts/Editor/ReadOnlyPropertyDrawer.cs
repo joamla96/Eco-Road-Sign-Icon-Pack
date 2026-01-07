@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+using UnityEngine;
 using UnityEditor;
 /// <summary>  This class contain custom drawer for ReadOnly attribute. Original code from : https://www.patrykgalach.com/2020/01/20/readonly-attribute-in-unity-editor/ </summary>
 [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]

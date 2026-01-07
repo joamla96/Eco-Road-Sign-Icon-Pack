@@ -1,14 +1,10 @@
 ﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
 
-using UnityEngine;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using Eco.Shared.Items;
-using Eco.Shared.Localization;
+using UnityEngine;
 using UnityEngine.Serialization;
-using VoxelEngine.Materials;
 
 /// <summary>
 /// Block contains all the client side data for a block, including a builder which conains rules and meshes for rendering.
@@ -40,6 +36,7 @@ public partial class Block
     public bool IsWater = false;
     public bool Solid = true;
     public bool WaterOccupancy = false;
+    public bool WaterLoggable = false;
     public bool BuildCollider = true;
     public bool Rendered = true;
     public UnityEngine.Rendering.ShadowCastingMode ShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;

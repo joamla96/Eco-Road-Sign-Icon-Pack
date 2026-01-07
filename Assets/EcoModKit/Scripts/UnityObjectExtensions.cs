@@ -1,4 +1,8 @@
-﻿using System;
+// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
+using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
@@ -34,4 +38,27 @@ public static class UnityObjectExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasComponent<T>(this Component component) => component.gameObject.TryGetComponent<T>(out _);
 
+
+    ///<summary>Gets a component of type T from the children of the game object when the component is null. GetComponentInChildren may be an expensive operation
+    ///so this is mean to be used on the OnValidate method to reduce the missing references errors on the prefabs</summary>
+    public static void GetAndVerifyExistsComponent<T>(this GameObject gameObject, ref T component) where T : Component
+    {
+        if (component == null) 
+        {
+            component = gameObject.GetComponentInChildren<T>(true);
+            if (component == null) Debug.LogError($"Could not find component of type {typeof(T)} among the children of {gameObject.name}");
+        }
+    }
+
+    ///<summary>Gets a component of type T from the children of the game object when the component is null (search based on name). GetComponentInChildren may be an expensive operation
+    ///so this is mean to be used on the OnValidate method to reduce the missing references errors on the prefabs</summary>
+    public static void GetAndVerifyExistsComponent<T>(this GameObject gameObject, ref T component, string name) where T : Component 
+    {
+        if (component == null) 
+        {
+            component = gameObject.GetComponentsInChildren<T>(true).Where(x => x.name.Equals(name)).FirstOrDefault();
+            if (component == null) Debug.LogError($"Could not find an object called {name} that contains the component of type {typeof(T)} among the children of {gameObject.name}");
+            else Debug.Log($"Component of type {typeof(T)} found");
+        }
+    }
 }

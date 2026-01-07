@@ -95,8 +95,8 @@ Shader "Curved/Standard"
             #pragma vertex vert
             #pragma fragment fragBase
 
-            #include "CurvedHelper.cginc"
             #include "UnityStandardCoreForward.cginc"
+            #include "CurvedHelper.cginc"
 
 #if UNITY_STANDARD_SIMPLE
             VertexOutputBaseSimple vert(VertexInput v)
@@ -174,12 +174,11 @@ Shader "Curved/Standard"
 
             // -------------------------------------
 
-
             #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
             #pragma shader_feature_local _METALLICGLOSSMAP
             #pragma shader_feature_local _PARALLAXMAP
             #pragma instancing_options assumeuniformscaling lodfade procedural:IndirectRenderingSetup
-            
+
             #pragma multi_compile_shadowcaster
             #pragma multi_compile_instancing
             #pragma multi_compile _ LOD_FADE_CROSSFADE
@@ -188,33 +187,44 @@ Shader "Curved/Standard"
             #pragma shader_feature NO_CURVE
 
             #pragma vertex vert
-            #pragma fragment fragShadowCaster
+            #pragma fragment frag
 
-            #include "UnityStandardShadow.cginc"
+            #include "UnityCG.cginc"
             #include "CurvedHelper.cginc"
 
-#ifdef UNITY_STANDARD_USE_SHADOW_OUTPUT_STRUCT
-            void vert(VertexInput v, out float4 opos : SV_POSITION, out VertexOutputShadowCaster o)
+            struct v2f 
             {
-                UNITY_SETUP_INSTANCE_ID(v);
-                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);
-                vertShadowCaster(v, opos, o);
-            }
-#elif UNITY_STANDARD_USE_STEREO_SHADOW_OUTPUT_STRUCT
-            void vert(VertexInput v, out float4 opos : SV_POSITION, out VertexOutputStereoShadowCaster os)
+                V2F_SHADOW_CASTER;
+                float2 uv : TEXCOORD1;
+                UNITY_VERTEX_OUTPUT_STEREO
+            };
+
+            uniform float4 _MainTex_ST;
+            uniform sampler2D _MainTex;
+            uniform fixed _Cutoff;
+            
+            v2f vert(appdata_base v)
             {
+                v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
-                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);
-                vertShadowCaster(v, opos, os);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                                
+                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);                
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                                            
+                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+                return o;
             }
-#else
-            void vert(VertexInput v, out float4 opos : SV_POSITION)
+
+            float4 frag(v2f i) : SV_Target
             {
-                UNITY_SETUP_INSTANCE_ID(v);
-                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);
-                vertShadowCaster(v, opos);
+                #if defined(_ALPHATEST_ON)
+                    fixed4 texcol = tex2D(_MainTex, i.uv);
+                    clip(texcol.a - _Cutoff);
+                #endif
+                
+                SHADOW_CASTER_FRAGMENT(i)
             }
-#endif
             ENDCG
         }
         // ------------------------------------------------------------------
@@ -413,9 +423,9 @@ Shader "Curved/Standard"
             #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
             #pragma shader_feature_local _METALLICGLOSSMAP
             #pragma instancing_options assumeuniformscaling lodfade procedural:IndirectRenderingSetup
-            
+
             #pragma skip_variants SHADOWS_SOFT
-            
+
             #pragma multi_compile_shadowcaster
             #pragma multi_compile __ FIRSTPERSONVIEW
 
@@ -423,33 +433,44 @@ Shader "Curved/Standard"
             #pragma shader_feature NO_CURVE
 
             #pragma vertex vert
-            #pragma fragment fragShadowCaster
+            #pragma fragment frag
 
-            #include "UnityStandardShadow.cginc"
+            #include "UnityCG.cginc"
             #include "CurvedHelper.cginc"
 
-#ifdef UNITY_STANDARD_USE_SHADOW_OUTPUT_STRUCT
-            void vert(VertexInput v, out float4 opos : SV_POSITION, out VertexOutputShadowCaster o)
+            struct v2f 
             {
-                UNITY_SETUP_INSTANCE_ID(v);
-                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);
-                vertShadowCaster(v, opos, o);
-            }
-#elif UNITY_STANDARD_USE_STEREO_SHADOW_OUTPUT_STRUCT
-            void vert(VertexInput v, out float4 opos : SV_POSITION, out VertexOutputStereoShadowCaster os)
+                V2F_SHADOW_CASTER;
+                float2 uv : TEXCOORD1;
+                UNITY_VERTEX_OUTPUT_STEREO
+            };
+
+            uniform float4 _MainTex_ST;
+            uniform sampler2D _MainTex;
+            uniform fixed _Cutoff;
+            
+            v2f vert(appdata_base v)
             {
+                v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
-                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);
-                vertShadowCaster(v, opos, os);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                
+                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);                
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                                
+                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+                return o;
             }
-#else
-            void vert(VertexInput v, out float4 opos : SV_POSITION)
+
+            float4 frag(v2f i) : SV_Target
             {
-                UNITY_SETUP_INSTANCE_ID(v);
-                v.vertex = curveVertex(v.vertex, unity_ObjectToWorld, unity_WorldToObject);
-                vertShadowCaster(v, opos);
+                #if defined(_ALPHATEST_ON)
+                    fixed4 texcol = tex2D(_MainTex, i.uv);
+                    clip(texcol.a - _Cutoff);
+                #endif
+                
+                SHADOW_CASTER_FRAGMENT(i)
             }
-#endif
             ENDCG
         }
 

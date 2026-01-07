@@ -5,24 +5,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-[Serializable]
-public class ChangedStringStateEvent : UnityEvent<string>
-{ }
-
-[Serializable]
-public class ChangedFloatStateEvent : UnityEvent<float>
-{ }
-
-[Serializable]
-public class ChangedStateEvent : UnityEvent<bool>
-{ }
-
-[Serializable]
-public class SetStateEvent : UnityEvent
-{ }
 
 // Do not remove base class as it is needed for modkit
-[RequireComponent(typeof(AutoWrapper), typeof(NetObjComponent), typeof(HighlightableObject))]
+[RequireComponent(typeof(WrapTarget), typeof(NetObjComponent))]
 public partial class WorldObject : SubscribableBehavior
 {
     #region State Event Data
@@ -35,7 +20,8 @@ public partial class WorldObject : SubscribableBehavior
     public SetStateEvent     OnInitiallyDisabled;
 
     // These elements trigger on any UpdateEnabled call.
-    public ChangedStateEvent OnEnabledChanged;
+    //Note: this is for when the object gets enabled/disabled server side, NOT when the game object is enabled/disabled on the client
+    public ChangedStateEvent OnEnabledChanged; 
     public SetStateEvent     OnEnabled;
     public SetStateEvent     OnDisabled;
 
@@ -73,6 +59,15 @@ public partial class WorldObject : SubscribableBehavior
     [Tooltip("Events when Custom Event triggers")] public SetStateEvent[]            EventHandlers         = Array.Empty<SetStateEvent>();
     #endregion
 
+    //Called when regular ol unity OnEnabled is called
+    public Action OnEnableEvent;
+
+    #region Paint
+    [SerializeField] Color defaultRedColor   = Color.clear;
+    [SerializeField] Color defaultGreenColor = Color.clear;
+    [SerializeField] Color defaultBlueColor  = Color.clear;
+    #endregion
+
     #region Occupancy
     public bool hasOccupancy = true;
     public bool overrideOccupancy = false;
@@ -83,5 +78,16 @@ public partial class WorldObject : SubscribableBehavior
     #region Interactable
     public bool interactable = true;
     protected float interactionBlockedUntilTime;    // no interaction timer
+
+    /// <summary>For checking client world object can be pick up interaction.</summary>
+    /// Similar to server pickup checks, but if false cutoff pickup even before sending to server.
+    public Func<bool> CanBePickup;
+
     #endregion
 }
+
+
+[Serializable] public class ChangedStringStateEvent : UnityEvent<string> { }
+[Serializable] public class ChangedFloatStateEvent : UnityEvent<float> { }
+[Serializable] public class ChangedStateEvent : UnityEvent<bool> { }
+[Serializable] public class SetStateEvent : UnityEvent { }

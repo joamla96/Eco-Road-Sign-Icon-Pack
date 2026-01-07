@@ -5,14 +5,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 /// <summary>
 /// A single case used in the CustomBuilder. When the conditions are met, the included mesh or alternatives will be used to render a block.
 /// </summary>
 [Serializable]
-public partial class MeshUsageCase
+public partial class MeshUsageCase: ICloneable
 {
     public bool enabled = true;
 
@@ -61,5 +60,10 @@ public partial class MeshUsageCase
         meshes.Add(mesh);
         meshes.AddRange(meshAlternates);
         return meshes.ToArray();
+    }
+
+    public object Clone()
+    {
+        return MemberwiseClone();
     }
 }

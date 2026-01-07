@@ -5,9 +5,7 @@
 
 using System;
 
-/// <summary>
-/// A base class for prefab builders which return a prefab given the surrounding set of blocks.
-/// </summary>
+/// <summary>A base class for chunk prefab builders which return a prefab that should be spawned for a block given the surrounding set of blocks.</summary>
 [Serializable]
 public abstract partial class PrefabBlockBuilder : BlockBuilder
 {

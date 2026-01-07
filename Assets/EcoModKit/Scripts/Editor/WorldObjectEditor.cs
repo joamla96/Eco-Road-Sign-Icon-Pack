@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(WorldObject))]
+[CustomEditor(typeof(WorldObject), true)]
 public partial class WorldObjectEditor : Editor
 {
     private static bool showInitiallyEnabled = false;
@@ -17,7 +17,7 @@ public partial class WorldObjectEditor : Editor
 
     private WorldObject worldObject;
 
-    void OnEnable()
+    public virtual void OnEnable()
     {
         worldObject = (WorldObject)target;
         foreach (string state in worldObject.States)
@@ -105,13 +105,14 @@ public partial class WorldObjectEditor : Editor
             });
         #endregion
 
-        worldObject.interactable = EditorGUILayout.Toggle("Interactable", worldObject.interactable);
-
-        if (worldObject.hasOccupancy = EditorGUILayout.Toggle("Has Occupancy", worldObject.hasOccupancy))
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("interactable"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("hasOccupancy"));
+        if (worldObject.hasOccupancy)
         {
-            worldObject.occupancyOffset = EditorGUILayout.Vector3Field("Occupancy Offset", worldObject.occupancyOffset);
-            if (worldObject.overrideOccupancy = EditorGUILayout.Toggle("Override Occupancy", worldObject.overrideOccupancy))
-                worldObject.size = EditorGUILayout.Vector3Field("Override Size", worldObject.size);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("occupancyOffset"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("overrideOccupancy"));
+            if (worldObject.overrideOccupancy)
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("size"));
         }
 
 #if ECO_DEV
@@ -120,7 +121,16 @@ public partial class WorldObjectEditor : Editor
         Shader.EnableKeyword("NO_CURVE"); // mod kit doesn't have curve helper
 #endif
 
+        // Extract property references
+        var redColorProp   = serializedObject.FindProperty("defaultRedColor");
+        var blueColorProp  = serializedObject.FindProperty("defaultBlueColor");
+        var greenColorProp = serializedObject.FindProperty("defaultGreenColor");
 
+        // Use null check before PropertyField
+        if (redColorProp != null)   EditorGUILayout.PropertyField(redColorProp);
+        if (blueColorProp != null)  EditorGUILayout.PropertyField(blueColorProp);
+        if (greenColorProp != null) EditorGUILayout.PropertyField(greenColorProp);
+        
         serializedObject.ApplyModifiedProperties();
     }
 

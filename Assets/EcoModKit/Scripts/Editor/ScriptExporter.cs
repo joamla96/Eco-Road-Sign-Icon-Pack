@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
-using UnityEngine;
-using Object = UnityEngine.Object;
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
 
 #if MODKITSCRIPTS
 public class ScriptExporter : IDisposable
@@ -15,7 +12,7 @@ public class ScriptExporter : IDisposable
         AssetDatabase.DeleteAsset(Application.dataPath + "/Resources/" + OutputDllName + ".txt");
 
         // remove stores
-        foreach (var store in Object.FindObjectsOfType<EcoScriptStore>())
+        foreach (var store in Object.FindObjectsByType<EcoScriptStore>())
             Component.DestroyImmediate(store);
     }
 
@@ -25,11 +22,11 @@ public class ScriptExporter : IDisposable
         List<string> textToCompile = new List<string>();
 
         // pre-remove nascent stores
-        foreach (var store in Object.FindObjectsOfType<EcoScriptStore>())
+        foreach (var store in Object.FindObjectsByType<EcoScriptStore>())
             Component.DestroyImmediate(store);
 
         // find all EcoScripts in this scene, and generate assemblies for them
-        foreach (var ecoscript in Object.FindObjectsOfType<EcoScript>())
+        foreach (var ecoscript in Object.FindObjectsByType<EcoScript>())
         {
             // make store on object
             var store = ecoscript.gameObject.GetComponent<EcoScriptStore>();

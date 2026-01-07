@@ -1,3 +1,6 @@
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
+
 using UnityEngine;
 
 // We send different ints from the animation events to change the behaviour and effect using the switch statement below
@@ -15,7 +18,7 @@ public enum FoodEffectType
 /// Configurable food effects to use with BiteableFoodObject
 /// Will help to subscribe to all the actions and tie them to particles and sounds
 /// </summary>
-public class FoodEffects : MonoBehaviour
+public class FoodEffects : TrackableBehavior
 {
     [Tooltip("Should the interaction effects play all at once or in a sequence with each bite?")]
     public bool                 sequenceInteractionEffects;
@@ -35,7 +38,9 @@ public class FoodEffects : MonoBehaviour
     public Vector3              mouthOffset = new Vector3(0f,-0.1f,0.1f);
     [Tooltip("How much variety is there in the angle of juicy mouth effects")]
     public float                mouthSprayRandomAngle = 15;
-
+    [Tooltip("Particles to be played when food is fresh. Will also spawn addressable 'FoodFreshEffect'")]
+    public GameObject           freshEffect;
+    
     // Used to send the food type to Wwise
     public enum FoodSoundType
     {

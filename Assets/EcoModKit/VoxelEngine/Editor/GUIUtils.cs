@@ -8,9 +8,9 @@ public static class GUIUtils
 {
     public static Rect[] Separate(Rect mainRect, int xCount, int yCount)
     {
-        float itemWidth = mainRect.width / xCount;
+        float itemWidth  = mainRect.width / xCount;
         float itemHeight = mainRect.height / yCount;
-        var list = new List<Rect>();
+        var   list       = new List<Rect>();
 
         for (int y = 0; y < yCount; y++)
         {
